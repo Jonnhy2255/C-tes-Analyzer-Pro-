@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronos IA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #f4f4f9;
+        }
+        .navbar {
+            position: fixed; /* Fixe la barre de navigation */
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .navbar {
+            background-color: #444;
+        }
+        .navbar .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .navbar .title {
+            flex-grow: 1;
+            text-align: center;
+            font-weight: bold;
+            color: #28a745;
+            font-size: 18px; /* Réduire légèrement la taille de la police */
+            padding-right: 30px; /* Ajouter du padding à droite pour éviter que le titre ne soit coupé */
+        }
+        .token-space {
+            margin-left: auto;
+            padding: 10px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+        .dark-mode .menu {
+            background-color: #444;
+            color: #f4f4f9;
+        }
+        .menu.open {
+            left: 0;
+        }
+        .menu ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .menu li {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .dark-mode .menu li {
+            border-bottom: 1px solid #666;
+        }
+        .menu li a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .menu li i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+        .menu li:last-child {
+            border-bottom: none;
+        }
+        .content {
+            padding: 80px 20px 20px; /* Ajustement du padding top pour laisser la place à la barre de navigation */
+            text-align: center;
+        }
+        .section {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+        .dark-mode .section {
+            background-color: #555;
+            color: #f4f4f9;
+        }
+        .section.consigne {
+            border-left: 5px solid red;
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #3a3b3c;
+        }
+        .dark-mode .section h2 {
+            color: #f4f4f9;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #3a3b3c;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .button.green {
+            background-color: #28a745;
+        }
+        .menu .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .menu .switch-container label {
+            font-size: 16px;
+        }
+        .menu .switch-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .recharge-container {
+            display: none; /* Cacher la page de recharge par défaut */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            margin: 80px auto; /* Ajouter un margin-top pour compenser la hauteur de la barre de navigation */
+        }
+        .info-text {
+            margin-top: 10px;
+            color: #ff5722;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+            text-align: center;
+        }
+        .how-to-recharge {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .how-to-recharge button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .how-to-recharge button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <div class="title">Pronos IA</div>
+    <div class="token-space" id="tokenSpace">Jetons: 10 🔮</div> <!-- Espace pour les jetons -->
+</div>
+
+<div class="menu" id="menu">
+    <ul>
+        <li><a href="#" onclick="showPage('rechargeContainer')">💱 Se recharger</a></li>
+        <li><a href="#"><i class="menu-icon">ℹ️</i>À propos</a></li>
+        <li><a href="#"><i class="menu-icon">📜</i>Termes et Conditions</a></li>
+        <li class="switch-container">
+            <label for="darkModeSwitch">Mode sombre</label>
+            <input type="checkbox" id="darkModeSwitch" onclick="toggleDarkMode()">
+        </li>
+    </ul>
+    <div style="padding: 15px; text-align: center; color: #888;">Version 1.1</div>
+</div>
+
+<div class="content" id="mainContainer"> <!-- Conteneur principal visible par défaut -->
+    <h1>PRONOS IA</h1>
+    <div class="section consigne">
+        <p>Cette application a été conçue par un expert en analyse de données pour fournir des prédictions allant jusqu'à 95% de précision en utilisant uniquement les cotes des équipes. [Jonnhy Billions]</p>
+    </div>
+    <div class="section">
+        <h2>SEGA FOOTBALL</h2>
+        <a href="odds.html" class="button">Commencer</a>
+    </div>
+    <footer>
+        © 2024 Pronos IA. Tous droits réservés.
+    </footer>
+</div>
+
+<div class="recharge-container" id="rechargeContainer">
+    <h1>Recharge de Jetons</h1>
+    <label for="jetons">Entrez le nombre de jetons désirés :</label>
+    <input type="number" id="jetons" min="1" placeholder="Nombre de jetons" oninput="calculateSats()">
+    
+    <p>Montant en sats : <span id="satsAmount" class="sats-info">0 sats</span></p>
+
+    <label for="sendingAddress">Entrez l'adresse d'envoi :</label>
+    <input type="text" id="sendingAddress" placeholder="Adresse d'envoi">
+    
+    <div class="info-text" onclick="copyAddress()">
+        Transférez à : <strong id="lightningAddress">billionsjonnhye8fb84af@zbd.gg</strong>
+    </div>
+    
+    <label for="receipt">Entrez votre reçu Lightning :</label>
+    <input type="text" id="receipt" placeholder="Reçu Lightning">
+    
+    <button onclick="submitRecharge()">Valider la recharge</button>
+
+    <div class="how-to-recharge">
+        <p>Besoin d'aide ?</p>
+        <button onclick="openHowToRecharge()">Comment se recharger</button>
+        <button onclick="goBack()">Retour</button> <!-- Bouton de retour -->
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('menu');
+        menu.classList.toggle('open');
+    }
+
+    function showPage(pageId) {
+        const mainContainer = document.getElementById('mainContainer');
+        const rechargeContainer = document.getElementById('rechargeContainer');
+        
+        mainContainer.style.display = 'none';
+        rechargeContainer.style.display = 'none';
+
+        if (pageId === 'rechargeContainer') {
+            rechargeContainer.style.display = 'block';
+        } else {
+            mainContainer.style.display = 'block';
+        }
+        
+        toggleMenu(); // Fermer le menu après avoir choisi une page
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    function calculateSats() {
+        const jetonsInput = document.getElementById('jetons').value;
+        const satsAmount = jetonsInput * 100; // Exemple de conversion
+        document.getElementById('satsAmount').textContent = `${satsAmount} sats`;
+    }
+
+    function copyAddress() {
+        const address = document.getElementById('lightningAddress').textContent;
+        navigator.clipboard.writeText(address)
+            .then(() => alert('Adresse copiée !'))
+            .catch(err => console.error('Erreur lors de la copie: ', err));
+    }
+
+    function submitRecharge() {
+        // Logique pour traiter la recharge
+        alert('Recharge validée !');
+    }
+
+    function openHowToRecharge() {
+        alert('Consultez notre site pour plus d\'informations sur la recharge.');
+    }
+
+    function goBack() {
+        showPage('mainContainer'); // Retourne à la page principale
+    }
+
+    // Afficher le conteneur principal par défaut
+    document.addEventListener('DOMContentLoaded', () => {
+        const mainContainer = document.getElementById('mainContainer');
+        mainContainer.style.display = 'block';
+    });
+</script>
+</body>
+</html>
