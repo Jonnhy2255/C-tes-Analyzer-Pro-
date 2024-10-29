@@ -18,7 +18,7 @@
             color: #f4f4f9;
         }
         .navbar {
-            position: fixed; /* Fixe la barre de navigation */
+            position: fixed;
             top: 0;
             width: 100%;
             z-index: 100;
@@ -40,8 +40,8 @@
             text-align: center;
             font-weight: bold;
             color: #28a745;
-            font-size: 18px; /* Réduire légèrement la taille de la police */
-            padding-right: 30px; /* Ajouter du padding à droite pour éviter que le titre ne soit coupé */
+            font-size: 18px;
+            padding-right: 30px;
         }
         .token-space {
             margin-left: auto;
@@ -95,7 +95,7 @@
             border-bottom: none;
         }
         .content {
-            padding: 80px 20px 20px; /* Ajustement du padding top pour laisser la place à la barre de navigation */
+            padding: 80px 20px 20px;
             text-align: center;
         }
         .section {
@@ -148,13 +148,13 @@
             cursor: pointer;
         }
         .recharge-container {
-            display: none; /* Cacher la page de recharge par défaut */
+            display: none;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
             max-width: 400px;
-            margin: 80px auto; /* Ajouter un margin-top pour compenser la hauteur de la barre de navigation */
+            margin: 80px auto;
         }
         .info-text {
             margin-top: 10px;
@@ -187,7 +187,7 @@
 <div class="navbar">
     <span class="menu-icon" onclick="toggleMenu()">☰</span>
     <div class="title">Pronos IA</div>
-    <div class="token-space" id="tokenSpace">Jetons: 10 🔮</div> <!-- Espace pour les jetons -->
+    <div class="token-space" id="tokenSpace">Jetons: 10 🔮</div>
 </div>
 
 <div class="menu" id="menu">
@@ -203,13 +203,13 @@
     <div style="padding: 15px; text-align: center; color: #888;">Version 1.1</div>
 </div>
 
-<div class="content" id="mainContainer"> <!-- Conteneur principal visible par défaut -->
+<div class="content" id="mainContainer">
     <h1>PRONOS IA</h1>
     <div class="section consigne">
-        <p>Cette application a été conçue par un expert en analyse de données pour fournir des prédictions allant jusqu'à 95% de précision en utilisant uniquement les cotes des équipes. [Jonnhy Billions]</p>
+        <p>Cette application a été conçue par un expert en analyse de données pour fournir des prédictions allant jusqu'à 95% de précision en utilisant uniquement les cotes et les 5 scores des 5 derniers matchs entre les équipes. [Jonnhy Billions]</p>
     </div>
     <div class="section">
-        <h2>SEGA FOOTBALL</h2>
+        <h2>REAL FOOTBALL</h2>
         <a href="odds.html" class="button">Commencer</a>
     </div>
     <footer>
@@ -225,44 +225,45 @@
     <p>Montant en sats : <span id="satsAmount" class="sats-info">0 sats</span></p>
 
     <label for="sendingAddress">Entrez l'adresse d'envoi :</label>
-    <input type="text" id="sendingAddress" placeholder="Adresse d'envoi">
+    <input type="text" id="sendingAddress" placeholder="Adresse d'envoi" required>
     
     <div class="info-text" onclick="copyAddress()">
         Transférez à : <strong id="lightningAddress">billionsjonnhye8fb84af@zbd.gg</strong>
     </div>
     
     <label for="receipt">Entrez votre reçu Lightning :</label>
-    <input type="text" id="receipt" placeholder="Reçu Lightning">
+    <input type="text" id="receipt" placeholder="Reçu Lightning" required>
     
     <button onclick="submitRecharge()">Valider la recharge</button>
 
     <div class="how-to-recharge">
         <p>Besoin d'aide ?</p>
         <button onclick="openHowToRecharge()">Comment se recharger</button>
-        <button onclick="goBack()">Retour</button> <!-- Bouton de retour -->
+        <button onclick="goBack()">Retour</button>
     </div>
 </div>
 
-<script>
+ <script>
+    // Récupération et initialisation du nombre de jetons
+    const tokenKey = 'userTokens';
+    let userTokens = localStorage.getItem(tokenKey) ? parseInt(localStorage.getItem(tokenKey)) : 10;
+
+    // Affichage des jetons actuels
+    document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+
     function toggleMenu() {
         const menu = document.getElementById('menu');
         menu.classList.toggle('open');
     }
 
     function showPage(pageId) {
-        const mainContainer = document.getElementById('mainContainer');
-        const rechargeContainer = document.getElementById('rechargeContainer');
-        
-        mainContainer.style.display = 'none';
-        rechargeContainer.style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('rechargeContainer').style.display = 'none';
+        document.getElementById(pageId).style.display = 'block';
+    }
 
-        if (pageId === 'rechargeContainer') {
-            rechargeContainer.style.display = 'block';
-        } else {
-            mainContainer.style.display = 'block';
-        }
-        
-        toggleMenu(); // Fermer le menu après avoir choisi une page
+    function goBack() {
+        showPage('mainContainer');
     }
 
     function toggleDarkMode() {
@@ -271,35 +272,92 @@
 
     function calculateSats() {
         const jetonsInput = document.getElementById('jetons').value;
-        const satsAmount = jetonsInput * 100; // Exemple de conversion
-        document.getElementById('satsAmount').textContent = `${satsAmount} sats`;
+        const satsAmount = jetonsInput * 5; // Chaque jeton coûte 5 sats
+        document.getElementById('satsAmount').textContent = satsAmount + ' sats';
     }
 
     function copyAddress() {
         const address = document.getElementById('lightningAddress').textContent;
-        navigator.clipboard.writeText(address)
-            .then(() => alert('Adresse copiée !'))
-            .catch(err => console.error('Erreur lors de la copie: ', err));
+        navigator.clipboard.writeText(address).then(() => {
+            alert('Adresse copiée : ' + address);
+        });
     }
 
     function submitRecharge() {
-        // Logique pour traiter la recharge
-        alert('Recharge validée !');
+        const jetonsInput = parseInt(document.getElementById('jetons').value);
+        const sendingAddress = document.getElementById('sendingAddress').value;
+        const receipt = document.getElementById('receipt').value;
+
+        // Vérifier que tous les champs sont remplis
+        if (!jetonsInput || isNaN(jetonsInput) || jetonsInput <= 0) {
+            alert("Veuillez entrer un nombre de jetons valide.");
+            return;
+        }
+        if (!sendingAddress) {
+            alert("Veuillez entrer une adresse d'envoi.");
+            return;
+        }
+        if (!receipt) {
+            alert("Veuillez entrer le reçu Lightning.");
+            return;
+        }
+
+        const totalSats = jetonsInput * 5; // Montant total en sats
+        const firstDigit = Math.floor(totalSats / 10 ** (Math.floor(Math.log10(totalSats)))); // Obtenir le premier chiffre
+
+        // Vérification de la validité du reçu
+        const receiptValid = receipt.startsWith("lnbc") && receipt.length >= 180;
+
+        // Validation de l'adresse d'envoi
+        if (sendingAddress === "billionsjonnhye8fb84af@zbd.gg") {
+            alert("L'adresse d'envoi doit être différente de l'adresse copiée.");
+            return;
+        }
+
+        // Vérification du reçu
+        if (receiptValid) {
+            // Vérifier si le reçu commence par "lnbc" suivi du premier chiffre du montant total en sats
+            if (receipt.startsWith("lnbc" + firstDigit) && receipt.length >= 180) {
+                // Mise à jour des jetons de l'utilisateur
+                userTokens += jetonsInput;
+                localStorage.setItem(tokenKey, userTokens);
+                document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+
+                // Vider les champs après la recharge réussie
+                document.getElementById('jetons').value = '';
+                document.getElementById('sendingAddress').value = '';
+                document.getElementById('receipt').value = '';
+                document.getElementById('satsAmount').textContent = '0 sats';
+
+                alert(`Recharge réussie ! Vous avez maintenant ${userTokens} jetons.`);
+                goBack(); // Retour à la page principale après la recharge
+            } else {
+                alert("Le reçu Lightning doit commencer par 'lnbc" + firstDigit + "' et contenir au moins 180 caractères.");
+            }
+        } else {
+            alert("Le reçu Lightning (invoice) est incorrect.");
+        }
     }
+
+    // Fonction pour fermer le menu lorsque l'utilisateur clique à l'extérieur
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('menu');
+        const menuIcon = document.querySelector('.menu-icon');
+
+        // Vérifiez si le menu est ouvert et si le clic se produit en dehors du menu et de l'icône
+        if (menu.classList.contains('open') && !menu.contains(event.target) && !menuIcon.contains(event.target)) {
+            menu.classList.remove('open');
+        }
+    });
+
+    // Afficher la page principale par défaut
+    document.getElementById('mainContainer').style.display = 'block';
+    document.getElementById('rechargeContainer').style.display = 'none';
 
     function openHowToRecharge() {
-        alert('Consultez notre site pour plus d\'informations sur la recharge.');
+        alert("Pour vous recharger, envoyez le montant désiré à l'adresse fournie et entrez le reçu Lightning.");
     }
-
-    function goBack() {
-        showPage('mainContainer'); // Retourne à la page principale
-    }
-
-    // Afficher le conteneur principal par défaut
-    document.addEventListener('DOMContentLoaded', () => {
-        const mainContainer = document.getElementById('mainContainer');
-        mainContainer.style.display = 'block';
-    });
 </script>
+
 </body>
 </html>
