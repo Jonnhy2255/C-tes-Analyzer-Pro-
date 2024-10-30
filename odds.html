@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Analyse</title>
+    <style>
+    /* Styles généraux */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 20px;
+        padding-top: 60px; /* Pour éviter que le contenu soit caché sous la barre de navigation */
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 100vh;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Mode sombre */
+    .dark-mode {
+        background-color: #333;
+        color: #f4f4f9;
+    }
+
+    /* Styles de la barre de navigation */
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode .navbar {
+        background-color: #444;
+    }
+
+    .navbar .menu-icon {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .navbar .title {
+        flex-grow: 1;
+        text-align: center;
+        font-weight: bold;
+        color: #28a745;
+        font-size: 18px;
+        padding-right: 30px;
+    }
+
+    .token-space {
+        margin-left: auto;
+        padding: 10px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* Menu latéral */
+    .menu {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .dark-mode .menu {
+        background-color: #444;
+        color: #f4f4f9;
+    }
+
+    .menu.open {
+        left: 0;
+    }
+
+    .menu ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .menu li {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .dark-mode .menu li {
+        border-bottom: 1px solid #666;
+    }
+
+    .menu li a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .menu li:last-child {
+        border-bottom: none;
+    }
+
+    .menu .switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .menu .switch-container label {
+        font-size: 16px;
+    }
+
+    .menu .switch-container input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    /* Styles pour la section des cotes */
+    h1 {
+        color: black; /* Titres en noir */
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .consigne-box {
+        width: 90%;
+        padding: 10px;
+        background-color: #ffffff;
+        border-left: 5px solid #ff5722;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .odds-container {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        align-items: center;
+    }
+
+    .odds-box {
+        width: 100%;
+        max-width: 300px;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #e3f2fd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 10px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    input {
+        width: 80%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 16px;
+        margin-top: 5px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        gap: 20px;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 18px;
+        color: #fff;
+        background-color: #555; /* Boutons en gris foncé */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #444; /* Légère variation à l'état survolé */
+    }
+
+    .footer {
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    /* Styles pour la section des scores */
+    .match-box {
+        width: 90%;
+        max-width: 400px;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #e3f2fd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .match-label {
+        font-size: 16px;
+        color: #333;
+        margin-right: 10px;
+    }
+
+    input {
+        width: 50px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    /* Masquer toutes les pages par défaut */
+    .page {
+        display: none;
+    }
+
+    /* Afficher la page active */
+    .page.active {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Styles de la page de chargement */
+    .loading-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999; /* Assurez-vous qu'il est au-dessus des autres éléments */
+        display: none; /* Masqué par défaut */
+    }
+
+    .loader {
+        display: flex;
+        justify-content: space-between;
+        width: 60px; /* Largeur totale pour trois points */
+    }
+
+    .loader div {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #555; /* Couleur des points */
+        animation: wave 0.6s infinite alternate;
+    }
+
+    .loader div:nth-child(2) {
+        animation-delay: 0.2s; /* Délai pour le deuxième point */
+    }
+
+    .loader div:nth-child(3) {
+        animation-delay: 0.4s; /* Délai pour le troisième point */
+    }
+
+    @keyframes wave {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-15px); /* Distance de déplacement */
+        }
+    }
+
+    /* Styles pour les cases de prédictions */
+    .case {
+        width: 90%;
+        padding: 15px;
+        border: 1px solid #ccc; /* Bordure autour de la case */
+        border-radius: 5px;
+        background-color: #e3f2fd; /* Couleur de fond de la case */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 10px 0;
+    }
+
+    .case h2 {
+        color: black; /* Titre en noir */
+        margin-bottom: 10px;
+    }
+
+    .case .value {
+        color: red; /* Valeurs en rouge */
+        font-size: 20px; /* Taille de police pour les valeurs */
+        font-weight: bold; /* Valeurs en gras */
+    }
+</style>
+</head>
+<body>
+
+
+<div class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <div class="title">Pronos IA</div>
+    <div class="token-space" id="tokenSpace">Jetons: 10 🔮</div>
+</div>
+
+<div class="menu" id="menu">
+    <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="#" style="color: gray;">ℹ️ À propos (Pas encore disponible)</a></li>
+        <li><a href="#" style="color: gray;">📜 Termes et Conditions (Pas encore disponible)</a></li>
+        <li><a href="https://www.youtube.com/watch?v=your-video-link" target="_blank">🎥 Tutoriel</a></li>
+        <li><a href="https://whatsapp.com/channel/0029VakvuvWFCCoNxS3g142R" target="_blank">💬 Rejoindre la communauté</a></li>
+        <li>
+            <label for="darkModeSwitch">Mode sombre</label>
+            <input type="checkbox" id="darkModeSwitch" onclick="toggleDarkMode()">
+        </li>
+    </ul>
+    <div style="padding: 15px; text-align: center; color: #888;">Version 1.1</div>
+</div>
+
+<div id="loading-page" class="loading-page" style="display: none;">
+    <div class="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div id="odds-page" class="page active">
+    <h1>Football Analyse</h1>
+    <div class="consigne-box">
+        Entrez les cotes pour chaque équipe (ex: 1.50)
+    </div>
+    <div class="odds-container">
+        <div class="odds-box">
+            <div class="label">Domicile</div>
+            <input type="number" id="team1-odds" placeholder="Cote" step="0.01" required>
+            <div class="error" id="error-team1" style="display:none;">Veuillez saisir une cote valide.</div>
+        </div>
+        <div class="odds-box">
+            <div class="label">Nul</div>
+            <input type="number" id="draw-odds" placeholder="Cote" step="0.01" required>
+            <div class="error" id="error-draw" style="display:none;">Veuillez saisir une cote valide.</div>
+        </div>
+        <div class="odds-box">
+            <div class="label">Extérieur</div>
+            <input type="number" id="team2-odds" placeholder="Cote" step="0.01" required>
+            <div class="error" id="error-team2" style="display:none;">Veuillez saisir une cote valide.</div>
+        </div>
+    </div>
+    <div class="button-container">
+        <button onclick="goToIndex()">Retour</button>
+        <button onclick="validateAndNext('match-scores-page')">Suivant</button>
+    </div>
+</div>
+
+<div id="match-scores-page" class="page">
+    <h1>Football Analyse</h1>
+    <div class="consigne">
+        Veuillez entrer les scores des derniers matchs pour chaque équipe.
+    </div>
+    <div class="match-box">
+        <div class="match-label">Match 1</div>
+        <input type="number" placeholder="Domicile" required>
+        <input type="number" placeholder="Extérieur" required>
+    </div>
+    <div class="match-box">
+        <div class="match-label">Match 2</div>
+        <input type="number" placeholder="Domicile" required>
+        <input type="number" placeholder="Extérieur" required>
+    </div>
+    <div class="match-box">
+        <div class="match-label">Match 3</div>
+        <input type="number" placeholder="Domicile" required>
+        <input type="number" placeholder="Extérieur" required>
+    </div>
+    <div class="match-box">
+        <div class="match-label">Match 4</div>
+        <input type="number" placeholder="Domicile" required>
+        <input type="number" placeholder="Extérieur" required>
+    </div>
+    <div class="match-box">
+        <div class="match-label">Match 5</div>
+        <input type="number" placeholder="Domicile" required>
+        <input type="number" placeholder="Extérieur" required>
+    </div>
+    <div class="button-container">
+        <button onclick="showPage('odds-page')">Retour</button>
+        <button onclick="storeScoresAndShowPredictions()">Prédiction</button>
+    </div>
+</div>
+
+<div id="predictions-page" class="page">
+    <h1>Prédictions de Match</h1>
+    <div class="case">
+        <h2>% de Victoire</h2>
+        <div class="info-group" id="victory-results">
+            <span class="value">75%</span> <!-- Exemple de valeur -->
+        </div>
+    </div>
+    <div class="case">
+        <h2>Double Chance</h2>
+        <div class="info-group" id="double-chance-results">
+            <span class="value">50%</span> <!-- Exemple de valeur -->
+        </div>
+    </div>
+    <div class="case">
+        <h2>Nombre Moyen de Buts Global</h2>
+        <div class="info-group" id="average-goals-results">
+            <span class="value">2.5</span> <!-- Exemple de valeur -->
+        </div>
+    </div>
+    <div class="button-container">
+        <button onclick="showPage('match-scores-page')">Retour</button>
+    </div>
+    <div class="footer">
+        &copy; 2024 Pronos IA. Tous droits réservés.
+    </div>
+</div>
+
+<script>
+// Script pour les cotes, scores et prédictions
+let oddsData = {};
+let scoresData = [];
+
+function showPage(pageId) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+}
+
+function goToIndex() {
+    window.location.href = 'index.html'; // Redirige vers index.html
+}
+
+function validateAndNext(nextPageId) {
+    const team1Odds = document.getElementById('team1-odds').value;
+    const drawOdds = document.getElementById('draw-odds').value;
+    const team2Odds = document.getElementById('team2-odds').value;
+
+    if (!team1Odds || !drawOdds || !team2Odds) {
+        alert('Veuillez remplir toutes les cotes avant de continuer.');
+        return;
+    }
+
+    oddsData = {
+        domicile: parseFloat(team1Odds),
+        nul: parseFloat(drawOdds),
+        exterieur: parseFloat(team2Odds)
+    };
+
+    showPage(nextPageId);
+}
+
+function storeScoresAndShowPredictions() {
+    // Vérifier les jetons restants avant de continuer
+    if (userTokens <= 0) {
+        alert('Jetons insuffisants pour la prédiction, veuillez retourner à la page home pour vous recharger.');
+        return;
+    }
+
+    const matchBoxes = document.querySelectorAll('.match-box');
+    scoresData = [];
+
+    for (let box of matchBoxes) {
+        const domicileScore = box.children[1].value; // 1er input
+        const exterieurScore = box.children[2].value; // 2ème input
+        if (!domicileScore || !exterieurScore) {
+            alert('Veuillez remplir toutes les cases de scores avant de continuer.');
+            return;
+        }
+        scoresData.push({
+            domicile: parseFloat(domicileScore),
+            exterieur: parseFloat(exterieurScore)
+        });
+    }
+
+    // Afficher la page de chargement
+    document.getElementById('loading-page').style.display = 'flex'; // Affichage en mode flex pour centrer les points
+
+    // Attendre entre 3 et 5 secondes avant d'afficher les prédictions
+    const loadingTime = Math.random() * 2000 + 3000; // Entre 3000 ms (3 secondes) et 5000 ms (5 secondes)
+    setTimeout(() => {
+        calculateAndDisplayPredictions();
+        showPage('predictions-page');
+
+        // Réinitialiser les valeurs des scores
+        matchBoxes.forEach(box => {
+            box.children[1].value = '';
+            box.children[2].value = '';
+        });
+
+        // Réinitialiser les cotes et scores
+        oddsData = {};
+        scoresData = [];
+
+        // Masquer la page de chargement
+        document.getElementById('loading-page').style.display = 'none';
+
+        // Soustraire 1 jeton et mettre à jour l'affichage et localStorage
+        userTokens--;
+        localStorage.setItem(tokenKey, userTokens);
+        document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+        
+    }, loadingTime);
+}
+
+function calculateAndDisplayPredictions() {
+    const totalScores = scoresData.reduce((acc, score) => {
+        acc.domicile += score.domicile;
+        acc.exterieur += score.exterieur;
+        return acc;
+    }, { domicile: 0, exterieur: 0 });
+
+    const totalMatches = scoresData.length;
+    const averageGoals = (totalScores.domicile + totalScores.exterieur) / (2 * totalMatches);
+    
+    // Calcul des pourcentages de victoire
+    const probDomicile = (1 / oddsData.domicile) || 0;
+    const probDraw = (1 / oddsData.nul) || 0;
+    const probExterieur = (1 / oddsData.exterieur) || 0;
+    const totalProb = probDomicile + probDraw + probExterieur;
+
+    const percentageDomicile = (probDomicile / totalProb) * 100;
+    const percentageDraw = (probDraw / totalProb) * 100;
+    const percentageExterieur = (probExterieur / totalProb) * 100;
+
+    // Calcul des doubles chances
+    const doubleChance1 = percentageDomicile + percentageDraw; // Équipe 1 ou nul
+    const doubleChance2 = percentageDomicile + percentageExterieur; // Équipe 1 ou Équipe 2
+    const doubleChance3 = percentageExterieur + percentageDraw; // Équipe 2 ou nul
+
+    // Affichage des résultats
+    document.getElementById('victory-results').innerHTML = `
+        <div class="info-label">V équipe 1 :</div>
+        <div class="info-value">${percentageDomicile.toFixed(2)}%</div>
+        <div class="info-label">X ou nul :</div>
+        <div class="info-value">${percentageDraw.toFixed(2)}%</div>
+        <div class="info-label">V équipe 2:</div>
+        <div class="info-value">${percentageExterieur.toFixed(2)}%</div>
+    `;
+
+    document.getElementById('double-chance-results').innerHTML = `
+        <div class="info-label">V ou nul de équipe 1 :</div>
+        <div class="info-value">${doubleChance1.toFixed(2)}%</div>
+        <div class="info-label">Équipe 1 ou équipe 2 :</div>
+        <div class="info-value">${doubleChance2.toFixed(2)}%</div>
+        <div class="info-label">Équipe 2 ou match nul :</div>
+        <div class="info-value">${doubleChance3.toFixed(2)}%</div>
+    `;
+
+    document.getElementById('average-goals-results').innerHTML = `
+        <div class="info-label">Moyenne :</div>
+        <div class="info-value">${averageGoals.toFixed(2)}</div>
+    `;
+}
+
+// Afficher la page de cotes immédiatement à l'ouverture
+window.onload = function() {
+    showPage('odds-page'); // Afficher la page des cotes par défaut
+};
+
+// Script pour les jetons et le mode sombre
+const tokenKey = 'userTokens';
+let userTokens = localStorage.getItem(tokenKey) ? parseInt(localStorage.getItem(tokenKey)) : 10;
+
+// Affichage du nombre de jetons
+document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('open');
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+}
+
+// Fermer le menu lorsqu'on clique à l'extérieur
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('menu');
+    const menuIcon = document.querySelector('.menu-icon');
+
+    if (menu.classList.contains('open') && !menu.contains(event.target) && !menuIcon.contains(event.target)) {
+        menu.classList.remove('open');
+    }
+});
+</script>
+</body>
+</html>
