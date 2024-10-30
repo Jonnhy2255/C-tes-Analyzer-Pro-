@@ -247,118 +247,130 @@
 
  <script>
     // Récupération et initialisation du nombre de jetons
-    const tokenKey = 'userTokens';
-    let userTokens = localStorage.getItem(tokenKey) ? parseInt(localStorage.getItem(tokenKey)) : 10;
+const tokenKey = 'userTokens';
+let userTokens = localStorage.getItem(tokenKey) ? parseInt(localStorage.getItem(tokenKey)) : 10;
 
-    // Affichage des jetons actuels
-    document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+// Récupération des reçus déjà utilisés
+const usedReceiptsKey = 'usedReceipts';
+let usedReceipts = JSON.parse(localStorage.getItem(usedReceiptsKey)) || [];
 
-    function toggleMenu() {
-        const menu = document.getElementById('menu');
-        menu.classList.toggle('open');
-    }
+// Affichage des jetons actuels
+document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
 
-    function showPage(pageId) {
-        document.getElementById('mainContainer').style.display = 'none';
-        document.getElementById('rechargeContainer').style.display = 'none';
-        document.getElementById(pageId).style.display = 'block';
-    }
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('open');
+}
 
-    function goBack() {
-        showPage('mainContainer');
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-    }
-
-    function calculateSats() {
-        const jetonsInput = document.getElementById('jetons').value;
-        const satsAmount = jetonsInput * 5; // Chaque jeton coûte 5 sats
-        document.getElementById('satsAmount').textContent = satsAmount + ' sats';
-    }
-
-    function copyAddress() {
-        const address = document.getElementById('lightningAddress').textContent;
-        navigator.clipboard.writeText(address).then(() => {
-            alert('Adresse copiée : ' + address);
-        });
-    }
-
-    function submitRecharge() {
-        const jetonsInput = parseInt(document.getElementById('jetons').value);
-        const sendingAddress = document.getElementById('sendingAddress').value;
-        const receipt = document.getElementById('receipt').value;
-
-        // Vérifier que tous les champs sont remplis
-        if (!jetonsInput || isNaN(jetonsInput) || jetonsInput <= 0) {
-            alert("Veuillez entrer un nombre de jetons valide.");
-            return;
-        }
-        if (!sendingAddress) {
-            alert("Veuillez entrer une adresse d'envoi.");
-            return;
-        }
-        if (!receipt) {
-            alert("Veuillez entrer le reçu Lightning.");
-            return;
-        }
-
-        const totalSats = jetonsInput * 5; // Montant total en sats
-        const firstDigit = Math.floor(totalSats / 10 ** (Math.floor(Math.log10(totalSats)))); // Obtenir le premier chiffre
-
-        // Vérification de la validité du reçu
-        const receiptValid = receipt.startsWith("lnbc") && receipt.length >= 180;
-
-        // Validation de l'adresse d'envoi
-        if (sendingAddress === "billionsjonnhye8fb84af@zbd.gg") {
-            alert("L'adresse d'envoi doit être différente de l'adresse copiée.");
-            return;
-        }
-
-        // Vérification du reçu
-        if (receiptValid) {
-            // Vérifier si le reçu commence par "lnbc" suivi du premier chiffre du montant total en sats
-            if (receipt.startsWith("lnbc" + firstDigit) && receipt.length >= 180) {
-                // Mise à jour des jetons de l'utilisateur
-                userTokens += jetonsInput;
-                localStorage.setItem(tokenKey, userTokens);
-                document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
-
-                // Vider les champs après la recharge réussie
-                document.getElementById('jetons').value = '';
-                document.getElementById('sendingAddress').value = '';
-                document.getElementById('receipt').value = '';
-                document.getElementById('satsAmount').textContent = '0 sats';
-
-                alert(`Recharge réussie ! Vous avez maintenant ${userTokens} jetons.`);
-                goBack(); // Retour à la page principale après la recharge
-            } else {
-                alert("Le reçu Lightning doit commencer par 'lnbc" + firstDigit + "' et contenir au moins 180 caractères.");
-            }
-        } else {
-            alert("Le reçu Lightning (invoice) est incorrect.");
-        }
-    }
-
-    // Fonction pour fermer le menu lorsque l'utilisateur clique à l'extérieur
-    document.addEventListener('click', function(event) {
-        const menu = document.getElementById('menu');
-        const menuIcon = document.querySelector('.menu-icon');
-
-        // Vérifiez si le menu est ouvert et si le clic se produit en dehors du menu et de l'icône
-        if (menu.classList.contains('open') && !menu.contains(event.target) && !menuIcon.contains(event.target)) {
-            menu.classList.remove('open');
-        }
-    });
-
-    // Afficher la page principale par défaut
-    document.getElementById('mainContainer').style.display = 'block';
+function showPage(pageId) {
+    document.getElementById('mainContainer').style.display = 'none';
     document.getElementById('rechargeContainer').style.display = 'none';
+    document.getElementById(pageId).style.display = 'block';
+}
 
-    function openHowToRecharge() {
-        alert("Pour vous recharger, envoyez le montant désiré à l'adresse fournie et entrez le reçu Lightning.");
+function goBack() {
+    showPage('mainContainer');
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+}
+
+function calculateSats() {
+    const jetonsInput = document.getElementById('jetons').value;
+    const satsAmount = jetonsInput * 5; // Chaque jeton coûte 5 sats
+    document.getElementById('satsAmount').textContent = satsAmount + ' sats';
+}
+
+function copyAddress() {
+    const address = document.getElementById('lightningAddress').textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        alert('Adresse copiée : ' + address);
+    });
+}
+
+function submitRecharge() {
+    const jetonsInput = parseInt(document.getElementById('jetons').value);
+    const sendingAddress = document.getElementById('sendingAddress').value;
+    const receipt = document.getElementById('receipt').value;
+
+    // Vérifier que tous les champs sont remplis
+    if (!jetonsInput || isNaN(jetonsInput) || jetonsInput <= 0) {
+        alert("Veuillez entrer un nombre de jetons valide.");
+        return;
     }
+    if (!sendingAddress) {
+        alert("Veuillez entrer une adresse d'envoi.");
+        return;
+    }
+    if (!receipt) {
+        alert("Veuillez entrer le reçu Lightning.");
+        return;
+    }
+
+    // Vérification si le reçu a déjà été utilisé
+    if (usedReceipts.includes(receipt)) {
+        alert("Ce reçu Lightning a déjà été utilisé.");
+        return;
+    }
+
+    const totalSats = jetonsInput * 5; // Montant total en sats
+    const firstDigit = Math.floor(totalSats / 10 ** (Math.floor(Math.log10(totalSats)))); // Obtenir le premier chiffre
+
+    // Vérification de la validité du reçu
+    const receiptValid = receipt.startsWith("lnbc") && receipt.length >= 180;
+
+    // Validation de l'adresse d'envoi
+    if (sendingAddress === "billionsjonnhye8fb84af@zbd.gg") {
+        alert("L'adresse d'envoi doit être différente de l'adresse copiée.");
+        return;
+    }
+
+    // Vérification du reçu
+    if (receiptValid) {
+        if (receipt.startsWith("lnbc" + firstDigit) && receipt.length >= 180) {
+            // Mise à jour des jetons de l'utilisateur
+            userTokens += jetonsInput;
+            localStorage.setItem(tokenKey, userTokens);
+            document.getElementById('tokenSpace').textContent = 'Jetons: ' + userTokens + ' 🔮';
+
+            // Sauvegarder le reçu utilisé uniquement après validation
+            usedReceipts.push(receipt);
+            localStorage.setItem(usedReceiptsKey, JSON.stringify(usedReceipts));
+
+            // Vider les champs après la recharge réussie
+            document.getElementById('jetons').value = '';
+            document.getElementById('sendingAddress').value = '';
+            document.getElementById('receipt').value = '';
+            document.getElementById('satsAmount').textContent = '0 sats';
+
+            alert(`Recharge réussie ! Vous avez maintenant ${userTokens} jetons.`);
+            goBack(); // Retour à la page principale après la recharge
+        } else {
+            alert("Le reçu Lightning doit commencer par 'lnbc" + firstDigit + "' et contenir au moins 180 caractères.");
+        }
+    } else {
+        alert("Le reçu Lightning (invoice) est incorrect.");
+    }
+}
+
+// Fonction pour fermer le menu lorsque l'utilisateur clique à l'extérieur
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('menu');
+    const menuIcon = document.querySelector('.menu-icon');
+
+    if (menu.classList.contains('open') && !menu.contains(event.target) && !menuIcon.contains(event.target)) {
+        menu.classList.remove('open');
+    }
+});
+
+// Afficher la page principale par défaut
+document.getElementById('mainContainer').style.display = 'block';
+document.getElementById('rechargeContainer').style.display = 'none';
+
+function openHowToRecharge() {
+    alert("Pour vous recharger, envoyez le montant désiré à l'adresse fournie et entrez le reçu Lightning.");
+}
 </script>
 
 </body>
