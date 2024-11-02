@@ -4,183 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pronos IA</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .dark-mode {
-            background-color: #333;
-            color: #f4f4f9;
-        }
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            background-color: #fff;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .dark-mode .navbar {
-            background-color: #444;
-        }
-        .navbar .menu-icon {
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .navbar .title {
-            flex-grow: 1;
-            text-align: center;
-            font-weight: bold;
-            color: #28a745;
-            font-size: 18px;
-            padding-right: 30px;
-        }
-        .token-space {
-            margin-left: auto;
-            padding: 10px;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .menu {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100%;
-            background-color: #fff;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease;
-            z-index: 1000;
-        }
-        .dark-mode .menu {
-            background-color: #444;
-            color: #f4f4f9;
-        }
-        .menu.open {
-            left: 0;
-        }
-        .menu ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .menu li {
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-        }
-        .dark-mode .menu li {
-            border-bottom: 1px solid #666;
-        }
-        .menu li a {
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-        .menu li i {
-            margin-right: 10px;
-            color: #007bff;
-        }
-        .menu li:last-child {
-            border-bottom: none;
-        }
-        .content {
-            padding: 80px 20px 20px;
-            text-align: center;
-        }
-        .section {
-            background-color: #fff;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            color: #333;
-        }
-        .dark-mode .section {
-            background-color: #555;
-            color: #f4f4f9;
-        }
-        .section.consigne {
-            border-left: 5px solid red;
-            margin-bottom: 40px;
-        }
-        .section h2 {
-            color: #3a3b3c;
-        }
-        .dark-mode .section h2 {
-            color: #f4f4f9;
-        }
-        .button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 20px;
-            color: #fff;
-            background-color: #3a3b3c;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        .button.green {
-            background-color: #28a745;
-        }
-        .menu .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .menu .switch-container label {
-            font-size: 16px;
-        }
-        .menu .switch-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-        .recharge-container {
-            display: none;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 400px;
-            margin: 80px auto;
-        }
-        .info-text {
-            margin-top: 10px;
-            color: #ff5722;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: underline;
-            text-align: center;
-        }
-        .how-to-recharge {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .how-to-recharge button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .how-to-recharge button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <!-- Lien CDN pour Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+        background-color: #333;
+        color: #f4f4f9;
+    }
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .dark-mode .navbar {
+        background-color: #444;
+    }
+    .navbar .menu-icon {
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .navbar .title {
+        flex-grow: 1;
+        text-align: center;
+        font-weight: bold;
+        color: #28a745;
+        font-size: 18px;
+        padding-right: 30px;
+    }
+    .token-space {
+        margin-left: auto;
+        padding: 10px;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .menu {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+    .dark-mode .menu {
+        background-color: #444;
+        color: #f4f4f9;
+    }
+    .menu.open {
+        left: 0;
+    }
+    .menu ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    .menu li {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+    .dark-mode .menu li {
+        border-bottom: 1px solid #666;
+    }
+    .menu li a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .menu li i {
+        margin-right: 10px;
+        color: #007bff;
+    }
+    .menu li:last-child {
+        border-bottom: none;
+    }
+    .content {
+        padding: 80px 20px 20px;
+        text-align: center;
+    }
+    .section {
+        background-color: #fff;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        color: #333;
+    }
+    .dark-mode .section {
+        background-color: #555;
+        color: #f4f4f9;
+    }
+    .section.consigne {
+        border-left: 5px solid red;
+        margin-bottom: 40px;
+    }
+    .section h2 {
+        color: #3a3b3c;
+    }
+    .dark-mode .section h2 {
+        color: #f4f4f9;
+    }
+    .button {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: #3a3b3c;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+    .button.green {
+        background-color: #28a745;
+    }
+    .menu .switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .menu .switch-container label {
+        font-size: 16px;
+    }
+    .menu .switch-container input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .recharge-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 500px;
+        margin: 80px auto;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode .recharge-container {
+        background-color: #444;
+        color: #f4f4f9;
+    }
+    .recharge-container h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #000; /* Titre en noir */
+    }
+    .recharge-container label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+    .recharge-container input[type="number"],
+    .recharge-container input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s;
+    }
+    .recharge-container input[type="number"]:focus,
+    .recharge-container input[type="text"]:focus {
+        border-color: #28a745;
+        outline: none;
+    }
+    .sats-info {
+        font-weight: bold;
+        color: #007bff;
+    }
+    .info-text {
+        margin-top: 10px;
+        color: #ff5722;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: underline;
+        text-align: center;
+    }
+    .how-to-recharge {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .recharge-container button,
+    .how-to-recharge button {
+        display: inline-block;
+        background-color: #28a745; /* Couleur du bouton modernisée */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .recharge-container button:hover,
+    .how-to-recharge button:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    .recharge-container button:active,
+    .how-to-recharge button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
 </head>
 <body>
 
@@ -192,15 +239,13 @@
 
 <div class="menu" id="menu">
     <ul>
-        <li><a href="#" onclick="showPage('rechargeContainer')">💱 Se recharger</a></li>
-        <li><a href="#" style="color: gray;">ℹ️ À propos (Pas encore disponible)</a></li>
-        <li><a href="#" style="color: gray;">📜 Termes et Conditions (Pas encore disponible)</a></li>
-        <li><a href="https://youtu.be/II-wS4eAM8g?si=cNQvFitLqwTMKof1" target="_blank"><i class="menu-icon">🎥</i>Tutoriel(Comment recharger)</a></li>
-        <li><a href="https://whatsapp.com/channel/0029VakvuvWFCCoNxS3g142R" target="_blank"><i class="menu-icon">💬</i>Rejoindre la communauté</a></li>
-        <li class="switch-container">
-            <label for="darkModeSwitch">Mode sombre</label>
-            <input type="checkbox" id="darkModeSwitch" onclick="toggleDarkMode()">
-        </li>
+        <li><a href="#" onclick="showPage('rechargeContainer');"><i class="fas fa-wallet" style="color: black;"></i> Se recharger (Jetons)</a></li>
+        
+        <li><a href="historique.html"><i class="fas fa-history" style="color: black;"></i> Historiques</a></li>
+        <li><a href="https://youtu.be/II-wS4eAM8g?si=cNQvFitLqwTMKof1" target="_blank"><i class="fas fa-video" style="color: black;"></i> Tutoriel (Comment recharger)</a></li>
+        <li><a href="https://whatsapp.com/channel/0029VakvuvWFCCoNxS3g142R" target="_blank"><i class="fas fa-comments" style="color: black;"></i> Rejoindre la communauté</a></li>
+        <li><a href="#" style="color: gray;"><i class="fas fa-info-circle" style="color: black;"></i> À propos (Pas encore disponible)</a></li>
+        <li><a href="#" style="color: gray;"><i class="fas fa-file-alt" style="color: black;"></i> Termes et Conditions (Pas encore disponible)</a></li>
     </ul>
     <div style="padding: 15px; text-align: center; color: #888;">Version 1.1</div>
 </div>
@@ -371,6 +416,9 @@ document.getElementById('rechargeContainer').style.display = 'none';
 function openHowToRecharge() {
     alert("Pour vous recharger, envoyez le montant désiré à l'adresse fournie et entrez le reçu Lightning.");
 }
+
+
+
 </script>
 
 </body>
